@@ -1,0 +1,24 @@
+library(ggplot2)  
+library(dplyr)  
+
+# 读取数据  
+genelist <- read.csv("genelist3.csv", header = TRUE)  
+
+# 计算 -log10(padj)  
+genelist <- genelist %>%  
+  mutate(neg_log10_padj = -log10(padj))  
+
+# 绘制火山图  
+ggplot(genelist, aes(x = log2FoldChange, y = neg_log10_padj)) +  
+  geom_point(aes(color = padj < 0.05 & abs(log2FoldChange) > 1.2), alpha = 0.6) +  
+  scale_color_manual(values = c("grey", "red")) +  
+  labs(  
+    title = "Volcano Plot",  
+    x = "Log2 Fold Change",  
+    y = "-Log10(Adjusted P-value)"  
+  ) +  
+  theme_minimal() +  
+  theme(legend.position = "none")  
+
+# 保存图形  
+ggsave("volcano_plot.pdf", width = 10, height = 6)  
